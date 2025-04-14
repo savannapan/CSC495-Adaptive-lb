@@ -1,0 +1,43 @@
+# -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    # Create the module
+    module = bld.create_ns3_module('adaptive-load', [
+        'core', 
+        'internet', 
+        'point-to-point', 
+        'applications', 
+        'flow-monitor'
+    ])
+    
+    # Fix: Change includes to a list of strings
+    module.includes = '.'
+    
+    # Source files for the module
+    module.source = [
+        'model/ipv4-adaptive-lb-routing.cc',
+        'helper/ipv4-adaptive-lb-routing-helper.cc',
+    ]
+    
+    # Test library
+    module_test = bld.create_ns3_module_test_library('adaptive-load')
+    module_test.source = [
+        'test/adaptive-lb-routing-test-suite.cc',
+    ]
+    
+    # Headers
+    headers = bld(features='ns3header')
+    headers.module = 'adaptive-load'
+    headers.source = [
+        'model/ipv4-adaptive-lb-routing.h',
+        'helper/ipv4-adaptive-lb-routing-helper.h',
+    ]
+    
+    # Build examples if enabled
+    if bld.env.ENABLE_EXAMPLES:
+        obj = bld.create_ns3_program('adaptive-lb-routing-example', 
+            ['adaptive-load', 'internet', 'point-to-point', 'applications', 'flow-monitor'])
+        obj.source = 'examples/adaptive-lb-routing-example.cc'
+    
+    # Optional: Python bindings
+    # bld.ns3_python_bindings()
